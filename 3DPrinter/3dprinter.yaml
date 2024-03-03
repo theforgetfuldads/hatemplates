@@ -257,7 +257,7 @@ cards:
         state: 'on'
     card:
       camera_view: live
-      camera_image: camera.octoprint_camera
+      camera_image: camera.octoprint_camera # create a generic camera with the following url http://<octourl>/plugin/prusaslicerthumbnails/thumbnail/{{states("sensor.octoprint_print_file") | replace("gcode","png",1) }}
       type: picture-glance
       title: Mk4
       entities: []
@@ -265,7 +265,7 @@ cards:
         action: call-service
         service: light.toggle
         target:
-          entity_id: light.hwr
+          entity_id: light.hwr # add your light
       hold_action:
         action: toggle
   - type: conditional
@@ -310,6 +310,6 @@ cards:
       camera_view: auto
       type: picture-entity
       entity: sensor.octoprint_print_file 
-      camera_image: camera.stl_preview # create a generic camera with the following url http://<octourl>/plugin/prusaslicerthumbnails/thumbnail/{{states("sensor.octoprint_print_file") | replace("gcode","png",1) }}
+      camera_image: camera.stl_preview 
       tap_action:
         action: toggle
