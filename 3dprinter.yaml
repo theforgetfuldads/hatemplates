@@ -1,0 +1,315 @@
+square: false
+columns: 1
+type: grid
+cards:
+  - type: horizontal-stack
+    cards:
+      - type: custom:threedy-card
+        base_entity: sensor.octoprint
+        monitored:
+          - Status
+          - Bed
+          - Hotend
+          - ETA
+          - Elapsed
+          - Remaining
+        printer_type: I3
+        name: MK4
+        theme: Default
+        temperature_unit: C
+        round_temperature: true
+        use_mqtt: true
+  - type: horizontal-stack
+    cards:
+      - type: custom:mushroom-entity-card
+        entity: input_boolean.octo_controls # creater toggle helper called octo_controls
+        tap_action:
+          action: toggle
+        icon_color: indigo
+        name: Control
+        secondary_info: none
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-entity-card
+            entity: input_boolean.octoprint_webcam # creater toggle helper called octoprint_webcam
+            name: Webcam
+            tap_action:
+              action: toggle
+            secondary_info: none
+      - type: custom:mushroom-entity-card
+        entity: input_boolean.octo_info # creater toggle helper called octo_info
+        name: Info
+        tap_action:
+          action: toggle
+        secondary_info: none
+  - type: conditional
+    conditions:
+      - entity: input_boolean.octo_controls
+        state: 'on'
+    card:
+      type: custom:mushroom-title-card
+      title: Axis Controls
+  - type: conditional
+    conditions:
+      - entity: input_boolean.octo_controls
+        state: 'on'
+    card:
+      type: horizontal-stack
+      cards:
+        - type: horizontal-stack
+          cards:
+            - type: custom:mushroom-entity-card
+              entity: input_boolean.octo_controls
+              tap_action:
+                action: call-service
+                service: mqtt.publish
+                target: {}
+                data:
+                  topic: octoPrint/hassControl/home
+                  payload: '["x", "y", "z"]'
+                  qos: 0
+                  retain: false
+              primary_info: none
+              icon_color: green
+              fill_container: false
+              icon: mdi:home
+              secondary_info: none
+              layout: horizontal
+            - type: custom:mushroom-entity-card
+              entity: input_boolean.octo_controls
+              icon: mdi:arrow-up-bold
+              tap_action:
+                action: call-service
+                service: mqtt.publish
+                target: {}
+                data:
+                  topic: octoPrint/hassControl/jog
+                  payload: '{"z": 10, "speed": 0.5}'
+                  qos: 0
+                  retain: false
+              primary_info: none
+              icon_color: orange
+              fill_container: false
+              secondary_info: none
+              layout: horizontal
+            - type: custom:mushroom-entity-card
+              entity: input_boolean.octo_controls
+              icon: mdi:arrow-down-bold
+              tap_action:
+                action: call-service
+                service: mqtt.publish
+                target: {}
+                data:
+                  topic: octoPrint/hassControl/jog
+                  payload: '{"z": -10, "speed": 0.5}'
+                  qos: 0
+                  retain: false
+              primary_info: none
+              icon_color: orange
+              fill_container: false
+              secondary_info: none
+              layout: horizontal
+            - type: custom:mushroom-entity-card
+              entity: input_boolean.octo_controls
+              icon: mdi:arrow-left-bold
+              tap_action:
+                action: call-service
+                service: mqtt.publish
+                target: {}
+                data:
+                  topic: octoPrint/hassControl/jog
+                  payload: '{"x": -10, "speed": 0.5}'
+                  qos: 0
+                  retain: false
+              primary_info: none
+              icon_color: orange
+              fill_container: false
+              secondary_info: none
+              layout: horizontal
+            - type: custom:mushroom-entity-card
+              entity: input_boolean.octo_controls
+              icon: mdi:arrow-right-bold
+              tap_action:
+                action: call-service
+                service: mqtt.publish
+                target: {}
+                data:
+                  topic: octoPrint/hassControl/jog
+                  payload: '{"x": 10, "speed": 0.5}'
+                  qos: 0
+                  retain: false
+              primary_info: none
+              icon_color: orange
+              fill_container: false
+              secondary_info: none
+              layout: horizontal
+  - type: conditional
+    conditions:
+      - entity: input_boolean.octo_controls
+        state: 'on'
+    card:
+      type: custom:mushroom-title-card
+      title: Power Controls
+  - type: conditional
+    conditions:
+      - entity: input_boolean.octo_controls
+        state: 'on'
+    card:
+      type: horizontal-stack
+      cards:
+        - type: custom:stack-in-card
+          cards:
+            - type: custom:layout-card
+              layout_type: custom:grid-layout
+              layout:
+                grid-template-columns: auto 63px
+                margin: '-4px -4px -8px -4px'
+              cards:
+                - type: custom:stack-in-card
+                  mode: horizontal
+                  keep:
+                    background: true
+                    border_radius: true
+                    margin: true
+                  cards:
+                    - type: custom:mushroom-template-card
+                      primary: ''
+                      secondary: MK4 Switch
+                      icon: mdi:fan
+                      tap_action:
+                        action: toggle
+                      layout: vertical
+                      entity: switch.ender3_s1 #change to your remote power adapter  
+                      icon_color: |-
+                        {% if is_state(entity, 'on') %}
+                          green
+                        {% endif %}
+                        {% if is_state(entity, 'off') %}
+                          white
+                        {% endif %}
+                      double_tap_action:
+                        action: toggle
+                    - type: custom:mushroom-template-card
+                      entity: button.octoprint_restart_server
+                      secondary: Restart Octo
+                      icon: mdi:restart-alert
+                      icon_color: orange
+                      layout: vertical
+                      tap_action:
+                        action: toggle
+                    - type: custom:mushroom-template-card
+                      entity: button.octoprint_resume_job
+                      secondary: Resume
+                      icon: mdi:play
+                      icon_color: green
+                      layout: vertical
+                      tap_action:
+                        action: toggle
+  - type: conditional
+    conditions:
+      - entity: input_boolean.octo_controls
+        state: 'on'
+    card:
+      type: horizontal-stack
+      cards:
+        - type: custom:stack-in-card
+          cards:
+            - type: custom:layout-card
+              layout_type: custom:grid-layout
+              layout:
+                grid-template-columns: auto 63px
+                margin: '-4px -4px -8px -4px'
+              cards:
+                - type: custom:stack-in-card
+                  mode: horizontal
+                  keep:
+                    background: true
+                    border_radius: true
+                    margin: true
+                  cards:
+                    - type: custom:mushroom-template-card
+                      entity: switch.octoprint_pause_print
+                      secondary: Pause
+                      icon: mdi:pause
+                      icon_color: yellow
+                      layout: vertical
+                      tap_action:
+                        action: toggle
+                    - type: custom:mushroom-template-card
+                      entity: button.octoprint_stop_job
+                      secondary: Stop
+                      icon: mdi:stop
+                      icon_color: red
+                      layout: vertical
+                      tap_action:
+                        action: toggle
+                    - type: custom:mushroom-template-card
+                      entity: button.octoprint_cancel_print
+                      icon: mdi:cancel
+                      secondary: Cancel
+                      icon_color: red
+                      layout: vertical
+                      tap_action:
+                        action: toggle
+  - type: conditional
+    conditions:
+      - entity: input_boolean.octoprint_webcam
+        state: 'on'
+    card:
+      camera_view: live
+      camera_image: camera.octoprint_camera
+      type: picture-glance
+      title: Mk4
+      entities: []
+      tap_action:
+        action: call-service
+        service: light.toggle
+        target:
+          entity_id: light.hwr
+      hold_action:
+        action: toggle
+  - type: conditional
+    conditions:
+      - entity: input_boolean.octo_info
+        state: 'on'
+    card:
+      type: vertical-stack
+      cards:
+        - type: horizontal-stack
+          cards:
+            - type: custom:mushroom-entity-card
+              entity: sensor.octoprint_print_progress
+              icon: mdi:printer-3d
+              icon_color: lime
+              name: Progress
+            - type: custom:mushroom-entity-card
+              entity: sensor.octoprint_print_time_left
+              name: ETA
+              icon: mdi:home-clock
+              icon_color: lime
+        - type: horizontal-stack
+          cards:
+            - type: custom:mushroom-entity-card
+              entity: switch.octoprint_connect_to_printer
+              tap_action:
+                action: toggle
+              icon_color: teal
+              name: Connect to Octo
+            - type: custom:mushroom-entity-card
+              entity: binary_sensor.octoprint_connected
+              name: Octo Connection
+              icon: mdi:check-network
+              icon_color: teal
+  - type: conditional
+    conditions:
+      - entity: input_boolean.octo_info
+        state: 'on'
+    card:
+      show_state: true
+      show_name: false
+      camera_view: auto
+      type: picture-entity
+      entity: sensor.octoprint_print_file 
+      camera_image: camera.stl_preview # create a generic camera with the following url http://<octourl>/plugin/prusaslicerthumbnails/thumbnail/{{states("sensor.octoprint_print_file") | replace("gcode","png",1) }}
+      tap_action:
+        action: toggle
