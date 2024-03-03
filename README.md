@@ -1,0 +1,2 @@
+# hatemplates
+Home Assistant Templates
